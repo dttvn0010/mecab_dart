@@ -44,7 +44,6 @@ class _MyAppState extends State<MyApp> {
         }
         text += "\n";
       }
-      //text = tokens.length.toString();
 
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
