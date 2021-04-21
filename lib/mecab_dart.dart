@@ -32,8 +32,8 @@ final destroyMecabPointer =
 final destroyMecabFfi = destroyMecabPointer.asFunction<destroyMecab_func>();
 
 class TokenNode {
-  String surface;
-  List features;
+  String surface = "";
+  List features = [];
 
   TokenNode(String item) {
     var arr = item.split('\t');
@@ -49,7 +49,7 @@ class TokenNode {
 }
 
 class Mecab {
-  Pointer<Void> mecabPtr;
+  Pointer<Void>? mecabPtr;
 
   Future<void> copyFile(
       String dicdir, String assetDicDir, String fileName) async {
@@ -91,7 +91,7 @@ class Mecab {
   List parse(String input) {
     if (mecabPtr != null) {
       var resultStr =
-          (parseFfi(mecabPtr, input.toNativeUtf8())).toDartString().trim();
+          (parseFfi(mecabPtr!, input.toNativeUtf8())).toDartString().trim();
 
       var items;
       if (resultStr.contains('\n')) {
@@ -111,7 +111,7 @@ class Mecab {
 
   void destroy() {
     if (mecabPtr != null) {
-      destroyMecabFfi(mecabPtr);
+      destroyMecabFfi(mecabPtr!);
     }
   }
 }
