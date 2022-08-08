@@ -30,9 +30,9 @@ class _MyAppState extends State<MyApp> {
       // Initialize mecab tagger here 
       //   + 1st parameter : dictionary asset folder
       //   + 2nd parameter : additional mecab options      
-      await tagger.init("assets/ipadic", true);
+      await tagger.init("assets/ipadic-neologd", true);
 
-      var tokens = tagger.parse('にわにわにわにわとりがいる。');
+      var tokens = tagger.parse('8月3日に放送された「中居正広の金曜日のスマイルたちへ」(TBS系)で、1日たった5分でぽっこりおなかを解消するというダイエット方法を紹介。キンタロー。のダイエットにも密着。');
 
       for(var token in tokens) {
         text += token.surface + "\t";
