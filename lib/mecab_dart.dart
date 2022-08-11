@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:ffi/ffi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -64,7 +65,8 @@ class Mecab {
 
   Future<void> init(String assetDicDir, bool includeFeatures) async {
     var dir = (await getApplicationDocumentsDirectory()).path;
-    var dicdir = "$dir/ipadic";
+    var dictName = basename(assetDicDir);
+    var dicdir = "$dir/$dictName";
     var mecabrc = '$dicdir/mecabrc';
 
     if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
