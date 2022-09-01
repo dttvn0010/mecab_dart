@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ffi: ^1.0.0
-  path_provider: ^2.0.1
+  ffi: ^2.0.1
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:
