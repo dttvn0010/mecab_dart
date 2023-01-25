@@ -90,7 +90,7 @@ class Mecab {
     mecabPtr = initMecabFfi(options.toNativeUtf8(), dicdir.toNativeUtf8());
   }
 
-  List parse(String input) {
+  List<TokenNode> parse(String input) {
     if (mecabPtr != null) {
       var resultStr =
           (parseFfi(mecabPtr!, input.toNativeUtf8())).toDartString().trim();
@@ -102,7 +102,7 @@ class Mecab {
         items = resultStr.split(' ');
       }
 
-      var tokens = [];
+      List<TokenNode> tokens = [];
       for (var item in items) {
         tokens.add(TokenNode(item));
       }

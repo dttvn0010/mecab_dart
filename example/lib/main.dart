@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
+
+import "package:path_provider/path_provider.dart";
 import 'package:mecab_dart/mecab_dart.dart';
 
 void main() => runApp(MyApp());
@@ -12,9 +13,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  /// controller for the dynamic text input
+  TextEditingController controller =
+    TextEditingController(text: 'にわにわにわにわとりがいる。');
+  /// used platform version
   String _platformVersion = 'Unknown';
+  /// result of mecab
   String text = "";
+  /// mecab instance
   var tagger = new Mecab();
+  ///
+  List<TokenNode> tokens = [];
 
   @override
   void initState() {
@@ -31,19 +40,9 @@ class _MyAppState extends State<MyApp> {
       //   + 1st parameter : dictionary asset folder
       //   + 2nd parameter : additional mecab options      
       await tagger.init("assets/ipadic", true);
+      print(await getApplicationDocumentsDirectory());
 
-      var tokens = tagger.parse('にわにわにわにわとりがいる。');
-
-      for(var token in tokens) {
-        text += token.surface + "\t";
-        for(var i = 0; i < token.features.length; i++) {
-          text += token.features[i];
-          if(i + 1 < token.features.length) {
-            text += ",";
-          }
-        }
-        text += "\n";
-      }
+      tokens = tagger.parse(controller.text);
 
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
@@ -61,12 +60,55 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Mecab Dart - example'),
         ),
-        body: Center(
-          child: Text(text),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              TextField(
+                controller: controller,
+                maxLines: null,
+                onChanged: ((value) => setState(() {
+                  tokens = tagger.parse(controller.text);
+                  print(tokens.first.surface.length);
+                }))
+              ),
+              SizedBox(height: 20,),
+              SingleChildScrollView(
+                child: SelectionArea(
+                  child: Table(
+                    children: [
+                      TableRow(
+                        children: ["surface", "POS", "Base", "Reading", "Pronunciation"].map((e) => 
+                          Center(
+                            child: Text(e)
+                          )
+                        ).toList()
+                      ),
+                      ...tokens
+                        .where((token) => token.features.length == 9)
+                        .map((t) => 
+                          TableRow(
+                            children: [
+                              SelectableText(t.surface),
+                              SelectableText(t.features.sublist(0, 4).toString()),
+                              SelectableText(t.features[4]),
+                              SelectableText(t.features[7]),
+                              SelectableText(t.features[8])
+                            ]
+                          )
+                        ).toList()
+                    ]
+                  ),
+                ),
+              ),
+            ]
+          ),
         ),
       ),
     );
   }
+
 }
