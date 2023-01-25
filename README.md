@@ -12,7 +12,22 @@ dependencies:
 
 2. Copy Mecab dictionary (ipadic) to your assets folder
 
-3. Try the following example.
+3. **Windows only setup**
+Because mecab uses nmake on windows the mecab DLL needs to be created separately.
+For this open a **Developer Command Prompt** and change in the `windows/src` directory.
+In this directory execute `nmake -f  Makefile.x64.msvc`.
+After the build process finished, there should be a `libmecab.dll` in `windows/src`.
+Create a `blobs` folder on the top level of your application and copy that file there.
+Lastly, open `windows/CMakeLists.txt` of your application and append at the end:
+
+``` CMake
+install(
+  FILES ${PROJECT_BUILD_DIR}/../blobs/libmecab.dll 
+  DESTINATION ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+)
+```
+
+4. Try `example/lib/main.dart` or the following example.
 
 ### Example
 
@@ -22,9 +37,9 @@ Init the tagger:
 var tagger = new Mecab();
 await tagger.init("assets/ipadic", true);
 ```
+
 Set the boolean option in `init` function to true if you want to get the tokens including features,
 set it to false if you only want the token surfaces.
-
 
 Use the tagger to parse text:
 
