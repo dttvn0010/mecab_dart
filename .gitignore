@@ -5,3 +5,14 @@
 .pub/
 
 build/
+
+# ignore windows build files
+windows/src/*.exe
+windows/src/*.obj
+windows/src/*.dll
+windows/src/*.a
+windows/src/*.lib
+windows/src/*.o
+windows/src/*.exp
+windows/src/*.def
+windows/src/*.pdb
