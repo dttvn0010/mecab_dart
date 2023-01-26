@@ -17,9 +17,16 @@ typedef parseFunc = Pointer<Utf8> Function(
 typedef destroyMecabFunc = Void Function(Pointer<Void> mecab);
 typedef destroyMecab_func = void Function(Pointer<Void> mecab);
 
-final DynamicLibrary mecabDartLib = Platform.isAndroid
-    ? DynamicLibrary.open("libmecab_dart.so")
-    : DynamicLibrary.process();
+final DynamicLibrary mecabDartLib = () {
+  if(Platform.isAndroid)
+    return DynamicLibrary.open("libmecab_dart.so");
+  else if(Platform.isWindows)
+    return DynamicLibrary.open(
+      "${Directory(Platform.resolvedExecutable).parent.path}/blobs/libmecab.dll"
+    );
+  else
+    return DynamicLibrary.process();
+} ();
 
 final initMecabPointer =
     mecabDartLib.lookup<NativeFunction<initMecabFunc>>('initMecab');
