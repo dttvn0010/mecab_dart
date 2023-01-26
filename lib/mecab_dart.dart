@@ -85,6 +85,18 @@ class Mecab {
     await copyFile(dicdir, assetDicDir, 'right-id.def');
     await copyFile(dicdir, assetDicDir, 'sys.dic');
     await copyFile(dicdir, assetDicDir, 'unk.dic');
+    initWithIpadicDir(dicdir, includeFeatures);
+  }
+
+  /// init with ipadic without copy
+  void initWithIpadicDir(String dicdir, bool includeFeatures) async {
+    var mecabrc = '$dicdir/mecabrc';
+
+    if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
+      // Create new mecabrc file
+      var mecabrcFile = await (new File(mecabrc).create(recursive: true));
+      mecabrcFile.writeAsStringSync("");
+    }
 
     var options = includeFeatures ? "" : "-Owakati";
     mecabPtr = initMecabFfi(options.toNativeUtf8(), dicdir.toNativeUtf8());
