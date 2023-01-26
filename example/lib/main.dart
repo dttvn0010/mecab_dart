@@ -40,7 +40,6 @@ class _MyAppState extends State<MyApp> {
       //   + 1st parameter : dictionary asset folder
       //   + 2nd parameter : additional mecab options      
       await tagger.init("assets/ipadic", true);
-      print(await getApplicationDocumentsDirectory());
 
       tokens = tagger.parse(controller.text);
 
@@ -52,6 +51,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       _platformVersion = platformVersion;
+      print(platformVersion);
     });
   }
 
