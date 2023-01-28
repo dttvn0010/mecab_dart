@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.16.0"
+  cupertino_icons:
+    dependency: "direct main"
+    description:
+      name: cupertino_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   fake_async:
     dependency: transitive
     description:
@@ -44,7 +51,7 @@ packages:
     source: hosted
     version: "1.3.1"
   ffi:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: ffi
       url: "https://pub.dartlang.org"
@@ -81,6 +88,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  mecab_dart:
+    dependency: "direct main"
+    description:
+      path: ".."
+      relative: true
+    source: path
+    version: "0.1.3"
   meta:
     dependency: transitive
     description:
@@ -96,7 +110,7 @@ packages:
     source: hosted
     version: "1.8.2"
   path_provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path_provider
       url: "https://pub.dartlang.org"
