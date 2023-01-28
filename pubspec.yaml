@@ -36,6 +36,8 @@ flutter:
         pluginClass: MecabDartPlugin
       windows:
         pluginClass: MecabDartPluginCApi
+      linux:
+        pluginClass: MecabDartPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
