@@ -34,7 +34,7 @@ final destroyMecabFfi = destroyMecabPointer.asFunction<destroyMecab_func>();
 
 class TokenNode {
   String surface = "";
-  List features = [];
+  List<String> features = [];
 
   TokenNode(String item) {
     var arr = item.split('\t');
