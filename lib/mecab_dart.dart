@@ -44,8 +44,12 @@ final int Function(int x, int y) nativeAdd = mecabDartLib
     .asFunction();
 
 
+/// Class that represent one token from mecab's output.
 class TokenNode {
+  /// The surface form of the token (how it appears in the text)
   String surface = "";
+  /// A list of features of this token (varies depending on the dictionar you
+  /// are using)
   List<String> features = [];
 
   TokenNode(String item) {
@@ -61,11 +65,15 @@ class TokenNode {
   }
 }
 
+/// Class that represents a Mecab instance
 class Mecab {
+  /// Pointer to the Mecab instance on the C side
   Pointer<Void>? mecabPtr;
 
-  Future<void> copyFile(
-      String dicdir, String assetDicDir, String fileName) async {
+  /// Copies `assetDicDir/fileName` to `dicdir/fileName` if it does not already
+  /// exist
+  Future<void> copyFile(String dicdir, String assetDicDir, String fileName) async 
+  {
     if (FileSystemEntity.typeSync('$dicdir/$fileName') ==
         FileSystemEntityType.notFound) {
       var data = (await rootBundle.load('$assetDicDir/$fileName'));
@@ -75,7 +83,14 @@ class Mecab {
     }
   }
 
-  Future<void> init(String assetDicDir, bool includeFeatures) async {
+  /// Initializes this mecab instance, this method needs to be called before
+  /// any other method.
+  /// `assetDicDir` is the directory of the dictionary (ex. IpaDic) from where
+  /// it should be loaded. If `includeFeatures` is set, the output of mecab
+  /// includes the token-features. If `dicDir` is null the dictionary is copied
+  /// to a folder called like the folder in the assets directory. This new 
+  /// folder is located inside the platforms documents directory. Otherwise,
+  /// it is copied to `dicDir`.
     var dir = (await getApplicationDocumentsDirectory()).path;
     var dictName = basename(assetDicDir);
     var dicdir = "$dir/$dictName";
@@ -100,7 +115,7 @@ class Mecab {
     initWithIpadicDir(dicdir, includeFeatures);
   }
 
-  /// init with ipadic without copy
+  /// Init this instance with ipadic without copying it
   void initWithIpadicDir(String dicdir, bool includeFeatures) async {
     var mecabrc = '$dicdir/mecabrc';
 
@@ -114,6 +129,7 @@ class Mecab {
     mecabPtr = initMecabFfi(options.toNativeUtf8(), dicdir.toNativeUtf8());
   }
 
+  /// Parses the given text using mecab and returns mecab's output
   List<TokenNode> parse(String input) {
     if (mecabPtr != null) {
       var resultStr =
@@ -135,6 +151,7 @@ class Mecab {
     return [];
   }
 
+  /// Frees the memory used by mecab and 
   void destroy() {
     if (mecabPtr != null) {
       destroyMecabFfi(mecabPtr!);
