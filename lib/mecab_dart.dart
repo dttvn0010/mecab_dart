@@ -39,6 +39,11 @@ final destroyMecabPointer =
     mecabDartLib.lookup<NativeFunction<destroyMecabFunc>>('destroyMecab');
 final destroyMecabFfi = destroyMecabPointer.asFunction<destroyMecab_func>();
 
+final int Function(int x, int y) nativeAdd = mecabDartLib
+    .lookup<NativeFunction<Int32 Function(Int32, Int32)>>("native_add")
+    .asFunction();
+
+
 class TokenNode {
   String surface = "";
   List<String> features = [];
@@ -135,13 +140,7 @@ class Mecab {
       destroyMecabFfi(mecabPtr!);
     }
   }
-}
 
-final int Function(int x, int y) nativeAdd = mecabDartLib
-    .lookup<NativeFunction<Int32 Function(Int32, Int32)>>("native_add")
-    .asFunction();
-
-class MecabDart {
   static const MethodChannel _channel = const MethodChannel('mecab_dart');
 
   static Future<String> get platformVersion async {
