@@ -91,10 +91,14 @@ class Mecab {
   /// to a folder called like the folder in the assets directory. This new 
   /// folder is located inside the platforms documents directory. Otherwise,
   /// it is copied to `dicDir`.
+  Future<void> init(
+    String assetDicDir, bool includeFeatures, {String? dicDir}) async
+  {
     var dir = (await getApplicationDocumentsDirectory()).path;
     var dictName = basename(assetDicDir);
-    var dicdir = "$dir/$dictName";
-    var mecabrc = '$dicdir/mecabrc';
+    if(dicDir == null)
+      dicDir = "$dir/$dictName";
+    var mecabrc = '$dicDir/mecabrc';
 
     if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
       // Create new mecabrc file
@@ -103,16 +107,17 @@ class Mecab {
     }
 
     // Copy dictionary from asset folder to App Document folder
-    await copyFile(dicdir, assetDicDir, 'char.bin');
-    await copyFile(dicdir, assetDicDir, 'dicrc');
-    await copyFile(dicdir, assetDicDir, 'left-id.def');
-    await copyFile(dicdir, assetDicDir, 'matrix.bin');
-    await copyFile(dicdir, assetDicDir, 'pos-id.def');
-    await copyFile(dicdir, assetDicDir, 'rewrite.def');
-    await copyFile(dicdir, assetDicDir, 'right-id.def');
-    await copyFile(dicdir, assetDicDir, 'sys.dic');
-    await copyFile(dicdir, assetDicDir, 'unk.dic');
-    initWithIpadicDir(dicdir, includeFeatures);
+    await copyFile(dicDir, assetDicDir, 'char.bin');
+    await copyFile(dicDir, assetDicDir, 'dicrc');
+    await copyFile(dicDir, assetDicDir, 'left-id.def');
+    await copyFile(dicDir, assetDicDir, 'matrix.bin');
+    await copyFile(dicDir, assetDicDir, 'pos-id.def');
+    await copyFile(dicDir, assetDicDir, 'rewrite.def');
+    await copyFile(dicDir, assetDicDir, 'right-id.def');
+    await copyFile(dicDir, assetDicDir, 'sys.dic');
+    await copyFile(dicDir, assetDicDir, 'unk.dic');
+
+    initWithIpadicDir(dicDir, includeFeatures);
   }
 
   /// Init this instance with ipadic without copying it
