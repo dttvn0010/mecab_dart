@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     String platformVersion;    
     try {
-      platformVersion = await MecabDart.platformVersion;
+      platformVersion = await Mecab.platformVersion;
 
       // Initialize mecab tagger here 
       //   + 1st parameter : dictionary asset folder
