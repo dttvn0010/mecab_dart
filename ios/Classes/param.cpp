@@ -68,8 +68,12 @@ bool Param::load(const char *filename) {
 
   std::string line;
   while (std::getline(ifs, line)) {
-    if (!line.size() ||
-        (line.size() && (line[0] == ';' || line[0] == '#'))) continue;
+    size_t line_size = line.size();
+    if(line_size > 0 && line[line_size-1] == '\r'){
+      line = line.substr(0, line_size-1);
+    }
+
+    if (!line[0] || line[0] == ';' || line[0] == '#') continue;
 
     size_t pos = line.find('=');
     CHECK_FALSE(pos != std::string::npos) << "format error: " << line;
