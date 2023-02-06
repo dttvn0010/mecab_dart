@@ -17,9 +17,16 @@ typedef parseFunc = Pointer<Utf8> Function(
 typedef destroyMecabFunc = Void Function(Pointer<Void> mecab);
 typedef destroyMecab_func = void Function(Pointer<Void> mecab);
 
-final DynamicLibrary mecabDartLib = Platform.isAndroid
-    ? DynamicLibrary.open("libmecab_dart.so")
-    : DynamicLibrary.process();
+final DynamicLibrary mecabDartLib = () {
+  if(Platform.isAndroid)
+    return DynamicLibrary.open("libmecab_dart.so");
+  else if(Platform.isWindows)
+    return DynamicLibrary.open(
+      "${Directory(Platform.resolvedExecutable).parent.path}/blobs/libmecab.dll"
+    );
+  else
+    return DynamicLibrary.process();
+} ();
 
 final initMecabPointer =
     mecabDartLib.lookup<NativeFunction<initMecabFunc>>('initMecab');
@@ -32,9 +39,18 @@ final destroyMecabPointer =
     mecabDartLib.lookup<NativeFunction<destroyMecabFunc>>('destroyMecab');
 final destroyMecabFfi = destroyMecabPointer.asFunction<destroyMecab_func>();
 
+final int Function(int x, int y) nativeAdd = mecabDartLib
+    .lookup<NativeFunction<Int32 Function(Int32, Int32)>>("native_add")
+    .asFunction();
+
+
+/// Class that represent one token from mecab's output.
 class TokenNode {
+  /// The surface form of the token (how it appears in the text)
   String surface = "";
-  List features = [];
+  /// A list of features of this token (varies depending on the dictionar you
+  /// are using)
+  List<String> features = [];
 
   TokenNode(String item) {
     var arr = item.split('\t');
@@ -49,11 +65,15 @@ class TokenNode {
   }
 }
 
+/// Class that represents a Mecab instance
 class Mecab {
+  /// Pointer to the Mecab instance on the C side
   Pointer<Void>? mecabPtr;
 
-  Future<void> copyFile(
-      String dicdir, String assetDicDir, String fileName) async {
+  /// Copies `assetDicDir/fileName` to `dicdir/fileName` if it does not already
+  /// exist
+  Future<void> copyFile(String dicdir, String assetDicDir, String fileName) async 
+  {
     if (FileSystemEntity.typeSync('$dicdir/$fileName') ==
         FileSystemEntityType.notFound) {
       var data = (await rootBundle.load('$assetDicDir/$fileName'));
@@ -63,11 +83,22 @@ class Mecab {
     }
   }
 
-  Future<void> init(String assetDicDir, bool includeFeatures) async {
+  /// Initializes this mecab instance, this method needs to be called before
+  /// any other method.
+  /// `assetDicDir` is the directory of the dictionary (ex. IpaDic) from where
+  /// it should be loaded. If `includeFeatures` is set, the output of mecab
+  /// includes the token-features. If `dicDir` is null the dictionary is copied
+  /// to a folder called like the folder in the assets directory. This new 
+  /// folder is located inside the platforms documents directory. Otherwise,
+  /// it is copied to `dicDir`.
+  Future<void> init(
+    String assetDicDir, bool includeFeatures, {String? dicDir}) async
+  {
     var dir = (await getApplicationDocumentsDirectory()).path;
     var dictName = basename(assetDicDir);
-    var dicdir = "$dir/$dictName";
-    var mecabrc = '$dicdir/mecabrc';
+    if(dicDir == null)
+      dicDir = "$dir/$dictName";
+    var mecabrc = '$dicDir/mecabrc';
 
     if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
       // Create new mecabrc file
@@ -76,20 +107,34 @@ class Mecab {
     }
 
     // Copy dictionary from asset folder to App Document folder
-    await copyFile(dicdir, assetDicDir, 'char.bin');
-    await copyFile(dicdir, assetDicDir, 'dicrc');
-    await copyFile(dicdir, assetDicDir, 'left-id.def');
-    await copyFile(dicdir, assetDicDir, 'matrix.bin');
-    await copyFile(dicdir, assetDicDir, 'pos-id.def');
-    await copyFile(dicdir, assetDicDir, 'rewrite.def');
-    await copyFile(dicdir, assetDicDir, 'right-id.def');
-    await copyFile(dicdir, assetDicDir, 'sys.dic');
-    await copyFile(dicdir, assetDicDir, 'unk.dic');
+    await copyFile(dicDir, assetDicDir, 'char.bin');
+    await copyFile(dicDir, assetDicDir, 'dicrc');
+    await copyFile(dicDir, assetDicDir, 'left-id.def');
+    await copyFile(dicDir, assetDicDir, 'matrix.bin');
+    await copyFile(dicDir, assetDicDir, 'pos-id.def');
+    await copyFile(dicDir, assetDicDir, 'rewrite.def');
+    await copyFile(dicDir, assetDicDir, 'right-id.def');
+    await copyFile(dicDir, assetDicDir, 'sys.dic');
+    await copyFile(dicDir, assetDicDir, 'unk.dic');
+
+    initWithIpadicDir(dicDir, includeFeatures);
+  }
+
+  /// Init this instance with ipadic without copying it
+  void initWithIpadicDir(String dicdir, bool includeFeatures) async {
+    var mecabrc = '$dicdir/mecabrc';
+
+    if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
+      // Create new mecabrc file
+      var mecabrcFile = await (new File(mecabrc).create(recursive: true));
+      mecabrcFile.writeAsStringSync("");
+    }
 
     var options = includeFeatures ? "" : "-Owakati";
     mecabPtr = initMecabFfi(options.toNativeUtf8(), dicdir.toNativeUtf8());
   }
 
+  /// Parses the given text using mecab and returns mecab's output
   List<TokenNode> parse(String input) {
     if (mecabPtr != null) {
       var resultStr =
@@ -111,18 +156,13 @@ class Mecab {
     return [];
   }
 
+  /// Frees the memory used by mecab and 
   void destroy() {
     if (mecabPtr != null) {
       destroyMecabFfi(mecabPtr!);
     }
   }
-}
 
-final int Function(int x, int y) nativeAdd = mecabDartLib
-    .lookup<NativeFunction<Int32 Function(Int32, Int32)>>("native_add")
-    .asFunction();
-
-class MecabDart {
   static const MethodChannel _channel = const MethodChannel('mecab_dart');
 
   static Future<String> get platformVersion async {
