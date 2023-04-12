@@ -13,35 +13,30 @@
 #include <string.h>
 #include <stdlib.h>
 
-std::vector<char*> split(std::string st) {
-    std::vector<char*> result;
-    size_t start = 0;
-    while(start < st.length()) {
-        while(st[start] == ' ') start ++;
-        size_t end = start + 1;
-        while(end < st.length() && st[end] != ' ') end ++;
-        char* token = (char*) malloc(end - start + 1);
-        strncpy(token, st.data() + start, end - start);
-        token[end - start] = 0;
-	    result.push_back(token);
-        start = end + 1;
-    }
-    return result;
-}
-
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 void* initMecab(const char* opt, const char* dicdir) {
     std::string rcfile = std::string(dicdir) + "/mecabrc";
     FILE *f = fopen(rcfile.data(), "rt");
     if(!f) return NULL;
 
-    std::string options = (std::string) "mecab --rcfile=" + (std::string) rcfile 
-                                         + " --dicdir=" + dicdir;
-    if(*opt) {
-        options += " " + std::string(opt);
-    }                       
+    std::vector<char*> params;
+    
+    params.push_back(strdup("mecab"));
 
-    std::vector<char*> params = split(options);
+    std::string rcfileString = "--rcfile=" + rcfile;
+    char* rcfileArg = (char*) malloc(rcfileString.length() + 1);
+    strcpy(rcfileArg, rcfileString.data());
+    params.push_back(rcfileArg);
+
+    std::string dicdirString = "--dicdir=" + std::string(dicdir);
+    char* dicdirArg = (char*) malloc(dicdirString.length() + 1);
+    strcpy(dicdirArg, dicdirString.data());
+    params.push_back(dicdirArg);
+
+    if(*opt) {
+        params.push_back(strdup(opt));
+    }
+
     mecab_t* mecab = mecab_new(params.size(), params.data());
 
     for(size_t i = 0; i < params.size(); i++) {
