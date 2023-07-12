@@ -5,8 +5,6 @@
 #include <vector>
 #include <string>
 
-std::vector<char*> split(std::string st);
-
 extern "C"  //__attribute__((visibility("default"))) __attribute__((used))
 {    
     void* initMecab(const char* opt, const char* dicdir);
