@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 import 'package:flutter/services.dart';
 
@@ -8,7 +7,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:ffi/ffi.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 typedef initMecabFunc = Pointer<Void> Function(
     Pointer<Utf8> options, Pointer<Utf8> dicdir);
