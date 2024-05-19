@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-import "package:path_provider/path_provider.dart";
 import 'package:mecab_dart/mecab_dart.dart';
 
 void main() => runApp(MyApp());
@@ -17,7 +16,7 @@ class _MyAppState extends State<MyApp> {
   TextEditingController controller =
     TextEditingController(text: 'にわにわにわにわとりがいる。');
   /// used platform version
-  String _platformVersion = 'Unknown';
+  String platformVersion = 'Unknown';
   /// result of mecab
   String text = "";
   /// mecab instance
@@ -34,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     String platformVersion;    
     try {
-      platformVersion = await MecabDart.platformVersion;
+      platformVersion = await Mecab.platformVersion;
 
       // Initialize mecab tagger here 
       //   + 1st parameter : dictionary asset folder
@@ -50,7 +49,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      platformVersion = platformVersion;
       print(platformVersion);
     });
   }
