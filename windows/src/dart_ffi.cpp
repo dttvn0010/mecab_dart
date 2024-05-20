@@ -33,7 +33,6 @@ std::vector<char*> parseOptions(const std::string& options) {
     return result;
 }
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
 void* initMecab(const char* opt, const char* dicdir) {
     std::string rcfile = std::string(dicdir) + "/mecabrc";
     FILE* f = fopen(rcfile.c_str(), "rt");
@@ -48,27 +47,24 @@ void* initMecab(const char* opt, const char* dicdir) {
     std::vector<char*> params = parseOptions(options);
     mecab_t* mecab = mecab_new(params.size(), params.data());
 
-    for (size_t i = 0; i < params.size(); ++i) {
+    for (size_t i = 0; i < params.size(); i++) {
         free(params[i]);
     }
 
     return mecab;
 }
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
 const char* parse(void* mecab, const char* input) {
     if (!mecab) return "";
     return mecab_sparse_tostr((mecab_t*)mecab, input);
 }
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
 void destroyMecab(void* mecab) {
     if (mecab) {
         mecab_destroy((mecab_t*)mecab);
     }
 }
 
-extern "C" __attribute__((visibility("default"))) __attribute__((used))
 int32_t native_add(int32_t x, int32_t y) {
     return x + y;
 }
