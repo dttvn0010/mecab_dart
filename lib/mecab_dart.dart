@@ -94,10 +94,11 @@ class Mecab {
   Future<void> init(
     String assetDicDir, bool includeFeatures, {String? dicDir}) async
   {
-    var dir = (await getApplicationDocumentsDirectory()).path;
-    var dictName = basename(assetDicDir);
-    if(dicDir == null)
+    if(dicDir == null){
+      var dir = (await getApplicationDocumentsDirectory()).path;
+      var dictName = basename(assetDicDir);
       dicDir = "$dir/$dictName";
+    }
     var mecabrc = '$dicDir/mecabrc';
 
     if (FileSystemEntity.typeSync(mecabrc) == FileSystemEntityType.notFound) {
