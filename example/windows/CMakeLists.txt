@@ -100,7 +100,18 @@ install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
 
+# Include the mecab binary
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_arm64.dll)
+else()
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_x86.dll)
+endif()
+
 install(
-  FILES ${PROJECT_BUILD_DIR}/../blobs/libmecab.dll 
-  DESTINATION ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  FILES
+    ${MECAB_DLL}
+  DESTINATION
+    ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  RENAME
+    libmecab.dll
 )
