@@ -13,13 +13,24 @@ dependencies:
 2. Copy Mecab dictionary (ipadic) to your assets folder
 
 3. **Windows only setup**
-Create a `blobs` folder on the top level of your application and copy `libmecab.dll` from `example/blobs` there.
+Create a `blobs` folder on the top level of your application and copy the dll's from `example/blobs` there.
 Lastly, open `windows/CMakeLists.txt` of your application and append at the end:
 
 ``` CMake
+# Include the mecab binary
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_arm64.dll)
+else()
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_x86.dll)
+endif()
+
 install(
-  FILES ${PROJECT_BUILD_DIR}/../blobs/libmecab.dll 
-  DESTINATION ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  FILES
+    ${MECAB_DLL}
+  DESTINATION
+    ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  RENAME
+    libmecab.dll
 )
 ```
 
