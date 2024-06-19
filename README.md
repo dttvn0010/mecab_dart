@@ -18,9 +18,10 @@ Lastly, open `windows/CMakeLists.txt` of your application and append at the end:
 
 ``` CMake
 # Include the mecab binary
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+message(STATUS "Detected processor architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "ARM64")
     set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_arm64.dll)
-else()
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_x86.dll)
 endif()
 
