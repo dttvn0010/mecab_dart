@@ -13,13 +13,25 @@ dependencies:
 2. Copy Mecab dictionary (ipadic) to your assets folder
 
 3. **Windows only setup**
-Create a `blobs` folder on the top level of your application and copy `libmecab.dll` from `example/blobs` there.
+Create a `blobs` folder on the top level of your application and copy the dll's from `example/blobs` there.
 Lastly, open `windows/CMakeLists.txt` of your application and append at the end:
 
 ``` CMake
+# Include the mecab binary
+message(STATUS "Detected processor architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "ARM64")
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_arm64.dll)
+elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    set(MECAB_DLL ${PROJECT_BUILD_DIR}/../blobs/libmecab_x86.dll)
+endif()
+
 install(
-  FILES ${PROJECT_BUILD_DIR}/../blobs/libmecab.dll 
-  DESTINATION ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  FILES
+    ${MECAB_DLL}
+  DESTINATION
+    ${INSTALL_BUNDLE_DATA_DIR}/../blobs/
+  RENAME
+    libmecab.dll
 )
 ```
 
@@ -59,5 +71,5 @@ for(var token in tokens) {
 
 Because mecab uses nmake on windows to compile, the mecab DLL needs to be created separately.
 For this open a [**Developer Command Prompt**](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022) and change in the `windows/src` directory.
-In this directory execute `nmake -f  Makefile.x64.msvc`.
+In this directory execute `nmake -f  Makefile.x64.msvc` (compile on x86) or `nmake -f  Makefile.arm64.msvc` (compile on arm64).
 After the build process finished, there should be a `libmecab.dll` in `windows/src`.
