@@ -1,7 +1,9 @@
 #include "mecab.h"
 #include <vector>
 #include <string>
+#include <string.h>
 #include <stdio.h>
+#include <cstring>
 #include <stdlib.h>
 
 // Function to split options string into arguments, respecting quotes
