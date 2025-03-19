@@ -25,6 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'com.example.mecab_dart'
     compileSdkVersion 33
 
     sourceSets {
@@ -37,7 +38,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
-    
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
     externalNativeBuild {
         cmake {
            path "CMakeLists.txt"
